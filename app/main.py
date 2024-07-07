@@ -1,8 +1,11 @@
+
+from logging_config import logger
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 import models, schemas, crud
 from app.database import engine , get_db
 from app.routers import healthcheck
+
 
 
 # Create database tables
@@ -17,6 +20,7 @@ app.include_router(healthcheck.router, tags=["healthcheck"])
 # Root endpoint
 @app.get("/")
 def read_root():
+    logger.info("Root endpoint was called")
     return {"message": "Welcome to the contact API"}
 
 # Endpoint to create a contact
