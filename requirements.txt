@@ -1,6 +1,8 @@
 fastapi
-sqlalchemy
-psycopg2-binary
-pydantic[dotenv]
 uvicorn
-colorlog
+sqlalchemy
+psycopg2
+passlib
+bcrypt
+jose
+python-dotenv
