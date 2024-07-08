@@ -25,7 +25,8 @@ def get_db():
     try:
         yield db
     except Exception as e:
-        raise logging.error(f"Database session connection error: {e}")
+        logging.error(f"Database session connection error: {e}")
+        raise
     finally:
         db.close()
 

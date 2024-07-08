@@ -35,5 +35,5 @@ logging.basicConfig(
     handlers=[file_handler, stream_handler]
 )
 
-logger = logging.getLogger("my_app_logger")
+logger = logging.getLogger()
 logger.info("Logging is set up.")
