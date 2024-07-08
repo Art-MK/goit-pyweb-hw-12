@@ -1,7 +1,9 @@
 import logging
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 import models, schemas
 from datetime import datetime, timedelta
+from fastapi import HTTPException
 
 def create_contact(db: Session, contact: schemas.ContactCreate):
     try:
@@ -11,6 +13,10 @@ def create_contact(db: Session, contact: schemas.ContactCreate):
         db.refresh(db_contact)
         logging.info(f"Contact created: {db_contact.id}, Name: {db_contact.first_name} {db_contact.last_name}")
         return db_contact
+    except IntegrityError as e:
+        db.rollback()
+        logging.error(f"Error creating contact: {e.orig}")
+        raise HTTPException(status_code=400, detail=f"Email {contact.email} already registered")
     except Exception as e:
         logging.error(f"Error creating contact: {e}")
         raise

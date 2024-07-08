@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
-@router.post("/", response_model=schemas.Contact)
+@router.post("/", response_model=schemas.Contact, status_code=status.HTTP_201_CREATED)
 def create_contact(contact: schemas.ContactCreate, db: Session = Depends(get_db)):
     return crud.create_contact(db=db, contact=contact)
 
