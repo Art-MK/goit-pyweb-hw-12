@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 import models, schemas
 from datetime import datetime, timedelta
 from fastapi import HTTPException
+from app.utils import verify_password, get_password_hash, create_access_token
 
 def create_contact(db: Session, contact: schemas.ContactCreate):
     try:
@@ -97,3 +98,32 @@ def get_contacts_with_upcoming_birthdays(db: Session):
 
     logging.info(f"Found {len(contacts)} contacts with upcoming birthdays.")
     return contacts
+
+def authenticate_user(db: Session, username: str, password: str):
+    user = db.query(models.User).filter(models.User.username == username).first()
+    if not user:
+        return False
+    if not verify_password(password, user.hashed_password):
+        return False
+    return user
+
+def create_user(db: Session, user: schemas.UserCreate):
+    db_user = db.query(models.User).filter(models.User.email == user.email).first()
+    if db_user:
+        raise HTTPException(status_code=409, detail="Email already registered")
+    hashed_password = get_password_hash(user.password)
+    db_user = models.User(username=user.username, email=user.email, hashed_password=hashed_password)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def create_access_token_for_user(user: models.User):
+    access_token_expires = timedelta(minutes=30)  # You can set this value in a config file
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return access_token
+
+def get_user_by_username(db: Session, username: str):
+    return db.query(models.User).filter(models.User.username == username).first()

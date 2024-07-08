@@ -3,7 +3,7 @@ from logging_config import logger
 from fastapi import FastAPI
 import models
 from app.database import engine
-from app.routers import healthcheck , contacts
+from app.routers import healthcheck , contacts, auth
 
 # Create database tables
 models.Base.metadata.create_all(bind=engine)
@@ -13,6 +13,7 @@ app = FastAPI()
 # Include routers
 app.include_router(contacts.router, prefix="/contacts", tags=["contacts"])
 app.include_router(healthcheck.router, tags=["healthcheck"])
+app.include_router(auth.router, prefix="/auth", tags=["auth"])
 
 # Root endpoint
 @app.get("/")
