@@ -35,5 +35,5 @@ logging.basicConfig(
     handlers=[file_handler, stream_handler]
 )
 
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 logger.info("Logging is set up.")

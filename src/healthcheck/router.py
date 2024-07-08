@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.database import get_db, check_db_connection
-from app.schemas import HealthCheckResponse
+from src.database import get_db
+from src.healthcheck.schemas import HealthCheckResponse
+from src.database import check_db_connection
 
 router = APIRouter()
 
-@router.get("/healthcheck", response_model=HealthCheckResponse)
+@router.get("/", response_model=HealthCheckResponse)
 def health_check(db: Session = Depends(get_db)):
     try:
         check_db_connection()
