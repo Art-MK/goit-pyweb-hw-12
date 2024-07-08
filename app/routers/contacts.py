@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.database import get_db
 from app import crud, schemas
+from fastapi.responses import JSONResponse
 
 router = APIRouter()
 
@@ -19,21 +20,21 @@ def read_contacts(skip: int = 0, limit: int = 10, db: Session = Depends(get_db))
 def read_contact(contact_id: int, db: Session = Depends(get_db)):
     db_contact = crud.get_contact(db, contact_id=contact_id)
     if db_contact is None:
-        raise HTTPException(status_code=404, detail=f"Contact with ID {contact_id} not found")
+        return JSONResponse(status_code=404, content={f"ID:{contact_id}":"Not Found"})
     return db_contact
 
 @router.put("/{contact_id}", response_model=schemas.Contact)
 def update_contact(contact_id: int, contact: schemas.ContactCreate, db: Session = Depends(get_db)):
     db_contact = crud.update_contact(db, contact_id=contact_id, contact=contact)
     if db_contact is None:
-        raise HTTPException(status_code=404, detail="Contact not found")
+        return JSONResponse(status_code=404, content={f"ID:{contact_id}":"Not Found"})
     return db_contact
 
 @router.delete("/{contact_id}", response_model=schemas.Contact)
 def delete_contact(contact_id: int, db: Session = Depends(get_db)):
     db_contact = crud.delete_contact(db, contact_id=contact_id)
     if db_contact is None:
-        raise HTTPException(status_code=404, detail="Contact not found")
+        return JSONResponse(status_code=404, content={f"ID:{contact_id}":"Not Found"})
     return db_contact
 
 @router.get("/search/", response_model=List[schemas.Contact])
